@@ -55,7 +55,11 @@ def get_nfl_section_information(nfl_json_soup):
 
     return section_information_list
 
-def get_nfl_matchups(year, nfl_json_soup):
+def get_nfl_matchups(nfl_json_soup):
+    data_json_raw = nfl_json_soup.find("div").get('data-json-module')
+    matchup_json = json.loads(data_json_raw)
+    matchup_year = matchup_json["Module"]["seasonFromUrl"]
+
     nfl_matchup_list = []
 
     nfl_sections = get_nfl_section_information(nfl_json_soup)
@@ -65,7 +69,7 @@ def get_nfl_matchups(year, nfl_json_soup):
             matchup_time = get_matchup_time(matchup)
             away_team, home_team = get_matchup_teams(matchup)
             
-            nfl_matchup = NFLMatchup(year, section_date, matchup_time, home_team, away_team)
+            nfl_matchup = NFLMatchup(matchup_year, section_date, matchup_time, home_team, away_team)
             
             nfl_matchup_list.append(nfl_matchup)
     

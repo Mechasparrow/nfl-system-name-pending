@@ -4,7 +4,7 @@ from matchup_parser import *
 week_count = 18
 nfl_weeks = list(range(1,week_count+1))
 
-nfl_matchups = get_nfl_matchups(2022,get_nfl_soup(2022,2))
+nfl_matchups = get_nfl_matchups(get_nfl_soup(2022,2))
 
 for matchup in nfl_matchups:
     print(matchup)
