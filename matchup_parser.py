@@ -25,8 +25,6 @@ def get_nfl_soup(year, week):
 
     return BeautifulSoup(nfl_json_response.text, 'html.parser')
 
-
-
 def find_team_name(team_soup):
     return team_soup.find(class_="nfl-c-matchup-strip__team-name").find(class_="nfl-c-matchup-strip__team-fullname").text.strip()
 
