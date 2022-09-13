@@ -1,6 +1,7 @@
 class NFLMatchup():
-    def __init__(self, year, date, time, home_team, away_team):
-        self.year = year 
+    def __init__(self, year, week, date, time, home_team, away_team):
+        self.year = year
+        self.week = week 
         self.date = date
         self.time = time
         self.home_team = home_team
