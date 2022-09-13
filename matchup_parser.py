@@ -25,13 +25,29 @@ def get_nfl_soup(year, week):
 
     return BeautifulSoup(nfl_json_response.text, 'html.parser')
 
+def get_team_soups(matchup_soup):
+    matchup_teams_soup = matchup_soup.find(class_ = "nfl-c-matchup-strip__game").find_all(class_ = "nfl-c-matchup-strip__team")
+    return matchup_teams_soup
+
 def find_team_name(team_soup):
     return team_soup.find(class_="nfl-c-matchup-strip__team-name").find(class_="nfl-c-matchup-strip__team-fullname").text.strip()
 
+def get_matchup_final_score(team_soup):
+    team_score_elem = team_soup.find(class_ = "nfl-c-matchup-strip__team-score")
+
+    if (team_score_elem != None):
+        return int(team_score_elem.get("data-score"))
+    else:
+        return None
+
 def get_matchup_teams(matchup_soup):
-    matchup_teams_soup = matchup_soup.find(class_ = "nfl-c-matchup-strip__game").find_all(class_ = "nfl-c-matchup-strip__team")
-    matchup_team_names = list(map(lambda name: find_team_name(name), matchup_teams_soup))
+    matchup_team_names = list(map(lambda matchup_team: find_team_name(matchup_team), get_team_soups(matchup_soup)))
     return (matchup_team_names[0], matchup_team_names[1])
+
+def get_matchup_team_scores(matchup_soup):
+    matchup_team_scores = list(map(lambda team_soup: get_matchup_final_score(team_soup), get_team_soups(matchup_soup)))
+
+    return (matchup_team_scores[0], matchup_team_scores[1])
 
 def get_matchup_time(matchup_soup):
     matchup_time_details = matchup_soup.find(class_ = "nfl-c-matchup-strip__date-time")
@@ -68,9 +84,14 @@ def get_nfl_matchups(nfl_json_soup):
         for matchup in matchups:
             matchup_time = get_matchup_time(matchup)
             away_team, home_team = get_matchup_teams(matchup)
-            
+
             nfl_matchup = NFLMatchup(matchup_year, section_date, matchup_time, home_team, away_team)
             
+            away_team_score, home_team_score = get_matchup_team_scores(matchup)
+
+            if (away_team_score != None and home_team_score != None):
+                nfl_matchup.set_final(home_team_score, away_team_score)
+
             nfl_matchup_list.append(nfl_matchup)
     
     return nfl_matchup_list
