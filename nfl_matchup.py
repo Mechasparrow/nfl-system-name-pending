@@ -18,9 +18,8 @@ class NFLMatchup():
         timestr = ""
         scorestr = ""
 
-
         if (self.time != None):
-            timestr = ", {self.time}"
+            timestr = f", {self.time}"
 
         if (self.final):
             scorestr = f"{self.away_team_score} - {self.home_team_score}"

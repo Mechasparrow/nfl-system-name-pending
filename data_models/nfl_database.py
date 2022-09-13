@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from db_base import Base
-from nfl_matchup_model import NFLTeam
+from nfl_matchup_model import NFLMatchModel
 
 class NFLDatabase():
     def __init__(self, db_name):

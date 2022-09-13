@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from nfl_matchup import NFLMatchup
+from datetime import datetime, time
+import re
 
 def get_nfl_soup(year, week):
     json_template_str = "https://www.nfl.com/api/lazy/load?json="
@@ -24,6 +26,16 @@ def get_nfl_soup(year, week):
     nfl_json_response = requests.get(nfl_json_api_url)
 
     return BeautifulSoup(nfl_json_response.text, 'html.parser')
+
+def get_date(year, section_date):
+    sanitized_section_date = re.sub(r'(\d)(st|nd|rd|th)', r'\1', section_date)
+    sanitized_section_date = sanitized_section_date.replace(",", "")
+
+    if ("not yet" in section_date):
+        return None
+
+    dt = datetime.strptime(f"{year} {sanitized_section_date}", "%Y %A %B %d").date()
+    return dt
 
 def get_team_soups(matchup_soup):
     matchup_teams_soup = matchup_soup.find(class_ = "nfl-c-matchup-strip__game").find_all(class_ = "nfl-c-matchup-strip__team")
@@ -54,6 +66,8 @@ def get_matchup_time(matchup_soup):
     matchup_time = None
     if (matchup_time_details != None):
         matchup_time = matchup_time_details.text.strip()
+        
+        return datetime.strptime(matchup_time, "%I:%M %p").time()
 
     return matchup_time 
 
@@ -75,7 +89,6 @@ def get_nfl_matchups(nfl_json_soup):
     data_json_raw = nfl_json_soup.find("div").get('data-json-module')
     matchup_json = json.loads(data_json_raw)
     matchup_year = matchup_json["Module"]["seasonFromUrl"]
-
     nfl_matchup_list = []
 
     nfl_sections = get_nfl_section_information(nfl_json_soup)
@@ -85,7 +98,8 @@ def get_nfl_matchups(nfl_json_soup):
             matchup_time = get_matchup_time(matchup)
             away_team, home_team = get_matchup_teams(matchup)
 
-            nfl_matchup = NFLMatchup(matchup_year, section_date, matchup_time, home_team, away_team)
+            nfl_date = get_date(matchup_year, section_date)
+            nfl_matchup = NFLMatchup(matchup_year, nfl_date, matchup_time, home_team, away_team)
             
             away_team_score, home_team_score = get_matchup_team_scores(matchup)
 
