@@ -1,9 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from nfl_matchup import NFLMatchup
 from datetime import datetime, time
 import re
+from data_models.nfl_matchup_model import NFLMatchModel
 
 def make_nfl_request(year,week):
     json_template_str = "https://www.nfl.com/api/lazy/load?json="
@@ -107,13 +107,21 @@ def get_nfl_matchups(nfl_json_soup):
             away_team, home_team = get_matchup_teams(matchup)
 
             nfl_date = get_date(matchup_year, section_date)
-            nfl_matchup = NFLMatchup(matchup_year, matchup_week, nfl_date, matchup_time, home_team, away_team)
-            
+
+            nfl_matchup = NFLMatchModel (
+                year = matchup_year,
+                week = matchup_week,
+                away_team = away_team,
+                home_team = home_team,
+                date = nfl_date,
+                time = matchup_time
+            )
+
             away_team_score, home_team_score = get_matchup_team_scores(matchup)
 
             if (away_team_score != None and home_team_score != None):
                 nfl_matchup.set_final(home_team_score, away_team_score)
-
+                
             nfl_matchup_list.append(nfl_matchup)
     
     return nfl_matchup_list

@@ -1,11 +1,6 @@
 from sqlalchemy import *
 from .db_base import Base
 
-import sys
-sys.path.append('..')
-
-from nfl_matchup import NFLMatchup
-
 class NFLMatchModel(Base):
     __tablename__ = "nfl_match"
 
@@ -20,18 +15,10 @@ class NFLMatchModel(Base):
     time = Column(Time)
     final = Column(Boolean)
 
-    def parse_from_scrape_model(matchup: NFLMatchup):
-        return NFLMatchModel(
-            year = matchup.year,
-            week = matchup.week,
-            away_team = matchup.away_team,
-            away_score = matchup.away_team_score,
-            home_team = matchup.home_team,
-            home_score = matchup.home_team_score,
-            date = matchup.date,
-            time = matchup.time,
-            final = matchup.final
-        )
+    def set_final(self, home_team_score, away_team_score):
+        self.final = True 
+        self.away_score = away_team_score
+        self.home_score = home_team_score
 
     def __str__(self):
         return f'''

@@ -11,7 +11,6 @@ nfl_weeks = list(range(1,week_count+1))
 database = NFLDatabase("nfldb.db")
 
 matchups_to_index = []
-
 nfl_reqs = []
 
 for week in nfl_weeks:
@@ -23,10 +22,7 @@ week = 1
 for nfl_req in nfl_reqs:
     nfl_soup = get_nfl_soup_from_request(nfl_req)
     nfl_matchups = get_nfl_matchups(nfl_soup)
-    
-    for matchup in nfl_matchups:
-        mod = NFLMatchModel.parse_from_scrape_model(matchup)
-        matchups_to_index.append(mod)
+    matchups_to_index += nfl_matchups
 
     print(f"Processed Week {week}")
     week+=1
