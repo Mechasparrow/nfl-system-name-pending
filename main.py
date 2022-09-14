@@ -12,13 +12,24 @@ database = NFLDatabase("nfldb.db")
 
 matchups_to_index = []
 
-for week in nfl_weeks:
-    nfl_matchups = get_nfl_matchups(get_nfl_soup(2022,week))
+nfl_reqs = []
 
-    print(f"Week {week}")
+for week in nfl_weeks:
+    nfl_matchup_request = make_nfl_request(2022, week)
+    print(f"Retrieved Week {week}")
+    nfl_reqs.append(nfl_matchup_request)
+
+week = 1
+for nfl_req in nfl_reqs:
+    nfl_soup = get_nfl_soup_from_request(nfl_req)
+    nfl_matchups = get_nfl_matchups(nfl_soup)
+    
     for matchup in nfl_matchups:
         mod = NFLMatchModel.parse_from_scrape_model(matchup)
         matchups_to_index.append(mod)
+
+    print(f"Processed Week {week}")
+    week+=1
 
 with Session(database.engine) as session:
     session.add_all(matchups_to_index)

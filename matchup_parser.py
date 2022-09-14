@@ -5,7 +5,7 @@ from nfl_matchup import NFLMatchup
 from datetime import datetime, time
 import re
 
-def get_nfl_soup(year, week):
+def make_nfl_request(year,week):
     json_template_str = "https://www.nfl.com/api/lazy/load?json="
 
     nfl_json = {
@@ -25,6 +25,13 @@ def get_nfl_soup(year, week):
     nfl_json_api_url = f'{json_template_str}{json.dumps(nfl_json)}'
     nfl_json_response = requests.get(nfl_json_api_url)
 
+    return nfl_json_response
+
+def get_nfl_soup_from_request(nfl_request):
+    return BeautifulSoup(nfl_request.text, 'html.parser')
+
+def get_nfl_soup(year, week):
+    nfl_json_response = make_nfl_request(year, week)
     return BeautifulSoup(nfl_json_response.text, 'html.parser')
 
 def get_date(year, section_date):
