@@ -13,7 +13,7 @@ class NFLMatchModel(Base):
     home_score = Column(Integer)
     date = Column(Date)
     time = Column(Time)
-    final = Column(Boolean)
+    final = Column(Boolean,default=False)
 
     def set_final(self, home_team_score, away_team_score):
         self.final = True 

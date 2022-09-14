@@ -4,9 +4,10 @@ import json
 from datetime import datetime, time
 import re
 from data_models.nfl_matchup_model import NFLMatchModel
+from requests_futures.sessions import FuturesSession
 
-def make_nfl_request(year,week):
-    json_template_str = "https://www.nfl.com/api/lazy/load?json="
+def make_nfl_request(year,week, future_session: FuturesSession = None):
+    json_template_str = f"https://www.nfl.com/api/lazy/load?json="
 
     nfl_json = {
         "Name":"Schedules",
@@ -23,7 +24,11 @@ def make_nfl_request(year,week):
     }
 
     nfl_json_api_url = f'{json_template_str}{json.dumps(nfl_json)}'
-    nfl_json_response = requests.get(nfl_json_api_url)
+
+    if (future_session != None):
+        nfl_json_response = future_session.get(nfl_json_api_url)
+    else:
+        nfl_json_response = requests.get(nfl_json_api_url)
 
     return nfl_json_response
 
