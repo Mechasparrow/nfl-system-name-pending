@@ -28,6 +28,8 @@ for nfl_req in as_completed(nfl_reqs):
 
 database = NFLDatabase("nfldb.db")
 match_dao = NFLMatchupDao(database)
-match_dao.add_matches(matchups_to_index)
+
+for match in matchups_to_index:
+    match_dao.upsert_match(match)
 
 print(f"{weeks_added} NFL weeks updated in database")
